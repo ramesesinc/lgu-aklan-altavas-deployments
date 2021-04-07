@@ -21,7 +21,7 @@ services:
 
 
   queue-server:
-    image: ramesesinc/queue-server:255.02.002
+    image: ramesesinc/queue-server:2.5.02.01
     container_name: queue-server
     restart: always
     logging: 
