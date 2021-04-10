@@ -3023,7 +3023,14 @@ create index ix_state on bank (state);
 create index ix_code on bank (code);
 
 
-alter table bankaccount modify fund_objid varchar(100) null not null ;  
+alter table bankaccount drop foreign key bankaccount_ibfk_2
+;
+alter table bankaccount modify fund_objid varchar(100) null not null 
+;  
+alter table bankaccount add CONSTRAINT `fk_bankaccount_fund_objid` 
+  FOREIGN KEY (`fund_objid`) REFERENCES `fund` (`objid`)
+; 
+
 alter table bankaccount add acctid varchar(50) null ; 
 create index ix_acctid on bankaccount (acctid) ;
 alter table bankaccount 
@@ -3032,7 +3039,14 @@ alter table bankaccount
 
 
 alter table batchcapture_collection_entry_item modify `item_title` varchar(255) NULL ;
-alter table batchcapture_collection_entry_item modify `fund_objid` varchar(100) NULL ;
+
+alter table batchcapture_collection_entry_item drop foreign key batchcapture_collection_entry_item_ibfk_3
+;
+alter table batchcapture_collection_entry_item modify `fund_objid` varchar(100) NULL 
+;
+alter table batchcapture_collection_entry_item add constraint fk_batchcapture_collection_entry_item_fund_objid 
+  foreign key (fund_objid) references fund (objid)
+; 
 
 
 create table ztmp_fix_business_recurringfee 
@@ -3376,8 +3390,9 @@ alter table entitymember modify member_name varchar(800) not null ;
 
 alter table entity_address modify street varchar(255) null ;
 
-
+set foreign_key_checks=0;
 alter table fund modify objid varchar(100) not null ; 
+set foreign_key_checks=1;
 
 alter table fund add ( 
   `groupid` varchar(50) NULL,
@@ -3417,7 +3432,10 @@ where aa.objid = bb.fund_objid
 ;
 
 
+set foreign_key_checks=0;
 alter table itemaccount modify fund_objid varchar(100) null; 
+set foreign_key_checks=1;
+
 alter table itemaccount add constraint fk_itemaccount_fund_objid 
   foreign key (fund_objid) references fund (objid)
 ;
@@ -3440,7 +3458,9 @@ alter table lob add psic_objid varchar(50) null ;
 create index ix_psic_objid on lob (psic_objid) ;
   
 
+set foreign_key_checks=0;
 alter table remittance_fund modify fund_objid varchar(100) not null; 
+set foreign_key_checks=1;
 
 update remittance_fund set fund_objid='FUND6f3c344a:15ec5d50d11:-7bb7' where fund_objid='TRUST FUND - DOLE'
 ;
