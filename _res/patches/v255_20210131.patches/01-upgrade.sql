@@ -136,7 +136,13 @@ INSERT INTO zpatch20181120_sys_usergroup_permission (`objid`, `usergroup_objid`,
 
 alter table sys_usergroup_permission modify objid varchar(100) not null 
 ; 
+
+alter table sys_usergroup_member drop foreign key sys_usergroup_member_ibfk_3
+;
 alter table sys_securitygroup modify objid varchar(100) not null 
+;
+alter table sys_usergroup_member add constraint fk_sys_usergroup_member_securitygroup_objid 
+  foreign key (securitygroup_objid) references sys_securitygroup (objid)
 ;
 
 
