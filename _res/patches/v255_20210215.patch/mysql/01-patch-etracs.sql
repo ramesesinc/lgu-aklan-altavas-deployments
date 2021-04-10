@@ -34,7 +34,7 @@ CREATE TABLE `bldgrpu_land` (
 
   
 
-create table batchgr_log (
+create table if not exists batchgr_log (
   objid varchar(50) not null,
   primary key (objid)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -639,13 +639,13 @@ create index `fk_batchgr_item_pin` on batchgr_item (`pin`);
 
 
 alter table batchgr_item add constraint `fk_batchgr_item_objid` 
-	foreign key (`objid`) references `faas` (`objid`);
+  foreign key (`objid`) references `faas` (`objid`);
 
 alter table batchgr_item add constraint `fk_batchgr_item_batchgr` 
-	foreign key (`parent_objid`) references `batchgr` (`objid`);
+  foreign key (`parent_objid`) references `batchgr` (`objid`);
 
 alter table batchgr_item add constraint `fk_batchgr_item_newfaasid` 
-	foreign key (`newfaasid`) references `faas` (`objid`);
+  foreign key (`newfaasid`) references `faas` (`objid`);
 
 
 CREATE TABLE `batchgr_forprocess` (
@@ -658,12 +658,12 @@ CREATE TABLE `batchgr_forprocess` (
 create index `fk_batchgr_forprocess_parentid` on batchgr_forprocess(`parent_objid`);
 
 alter table batchgr_forprocess add constraint `fk_batchgr_forprocess_parentid` 
-	foreign key (`parent_objid`) references `batchgr` (`objid`);
+  foreign key (`parent_objid`) references `batchgr` (`objid`);
 
 alter table batchgr_forprocess add constraint `fk_batchgr_forprocess_objid` 
-	foreign key (`objid`) references `batchgr_item` (`objid`);
+  foreign key (`objid`) references `batchgr_item` (`objid`);
 
-	
+  
 
 /* 254032-03019.02 */
 
@@ -672,10 +672,10 @@ alter table batchgr_forprocess add constraint `fk_batchgr_forprocess_objid`
 ==============================================*/
 
 alter table examiner_finding 
-	add inspectedby_objid varchar(50),
-	add inspectedby_name varchar(100),
-	add inspectedby_title varchar(50),
-	add doctype varchar(50)
+  add inspectedby_objid varchar(50),
+  add inspectedby_name varchar(100),
+  add inspectedby_title varchar(50),
+  add doctype varchar(50)
 ;
 
 create index ix_examiner_finding_inspectedby_objid on examiner_finding(inspectedby_objid)
@@ -683,34 +683,34 @@ create index ix_examiner_finding_inspectedby_objid on examiner_finding(inspected
 
 
 update examiner_finding e, faas f set 
-	e.inspectedby_objid = (select assignee_objid from faas_task where refid = f.objid and state = 'examiner' order by enddate desc limit 1),
-	e.inspectedby_name = e.notedby,
-	e.inspectedby_title = e.notedbytitle,
-	e.doctype = 'faas'
+  e.inspectedby_objid = (select assignee_objid from faas_task where refid = f.objid and state = 'examiner' order by enddate desc limit 1),
+  e.inspectedby_name = e.notedby,
+  e.inspectedby_title = e.notedbytitle,
+  e.doctype = 'faas'
 where e.parent_objid = f.objid
 ;
 
 update examiner_finding e, subdivision s set 
-	e.inspectedby_objid = (select assignee_objid from subdivision_task where refid = s.objid and state = 'examiner' order by enddate desc limit 1),
-	e.inspectedby_name = e.notedby,
-	e.inspectedby_title = e.notedbytitle,
-	e.doctype = 'subdivision'
+  e.inspectedby_objid = (select assignee_objid from subdivision_task where refid = s.objid and state = 'examiner' order by enddate desc limit 1),
+  e.inspectedby_name = e.notedby,
+  e.inspectedby_title = e.notedbytitle,
+  e.doctype = 'subdivision'
 where e.parent_objid = s.objid
 ;
 
 update examiner_finding e, consolidation c set 
-	e.inspectedby_objid = (select assignee_objid from consolidation_task where refid = c.objid and state = 'examiner' order by enddate desc limit 1),
-	e.inspectedby_name = e.notedby,
-	e.inspectedby_title = e.notedbytitle,
-	e.doctype = 'consolidation'
+  e.inspectedby_objid = (select assignee_objid from consolidation_task where refid = c.objid and state = 'examiner' order by enddate desc limit 1),
+  e.inspectedby_name = e.notedby,
+  e.inspectedby_title = e.notedbytitle,
+  e.doctype = 'consolidation'
 where e.parent_objid = c.objid
 ;
 
 update examiner_finding e, cancelledfaas c set 
-	e.inspectedby_objid = (select assignee_objid from cancelledfaas_task where refid = c.objid and state = 'examiner' order by enddate desc limit 1),
-	e.inspectedby_name = e.notedby,
-	e.inspectedby_title = e.notedbytitle,
-	e.doctype = 'cancelledfaas'
+  e.inspectedby_objid = (select assignee_objid from cancelledfaas_task where refid = c.objid and state = 'examiner' order by enddate desc limit 1),
+  e.inspectedby_name = e.notedby,
+  e.inspectedby_title = e.notedbytitle,
+  e.doctype = 'cancelledfaas'
 where e.parent_objid = c.objid
 ;
 
@@ -735,23 +735,23 @@ drop view if exists vw_assessment_notice
 create view vw_assessment_notice
 as 
 select 
-	a.objid,
-	a.state,
-	a.txnno,
-	a.txndate,
-	a.taxpayerid,
-	a.taxpayername,
-	a.taxpayeraddress,
-	a.dtdelivered,
-	a.receivedby,
-	a.remarks,
-	a.assessmentyear,
-	a.administrator_name,
-	a.administrator_address,
-	fl.tdno,
-	fl.displaypin as fullpin,
-	fl.cadastrallotno,
-	fl.titleno
+  a.objid,
+  a.state,
+  a.txnno,
+  a.txndate,
+  a.taxpayerid,
+  a.taxpayername,
+  a.taxpayeraddress,
+  a.dtdelivered,
+  a.receivedby,
+  a.remarks,
+  a.assessmentyear,
+  a.administrator_name,
+  a.administrator_address,
+  fl.tdno,
+  fl.displaypin as fullpin,
+  fl.cadastrallotno,
+  fl.titleno
 from assessmentnotice a 
 inner join assessmentnoticeitem i on a.objid = i.assessmentnoticeid
 inner join faas_list fl on i.faasid = fl.objid
@@ -764,53 +764,53 @@ drop view if exists vw_assessment_notice_item
 create view vw_assessment_notice_item 
 as 
 select 
-	ni.objid,
-	ni.assessmentnoticeid, 
-	f.objid AS faasid,
-	f.effectivityyear,
-	f.effectivityqtr,
-	f.tdno,
-	f.taxpayer_objid,
-	e.name as taxpayer_name,
-	e.address_text as taxpayer_address,
-	f.owner_name,
-	f.owner_address,
-	f.administrator_name,
-	f.administrator_address,
-	f.rpuid, 
-	f.lguid,
-	f.txntype_objid, 
-	ft.displaycode as txntype_code,
-	rpu.rputype,
-	rpu.ry,
-	rpu.fullpin ,
-	rpu.taxable,
-	rpu.totalareaha,
-	rpu.totalareasqm,
-	rpu.totalbmv,
-	rpu.totalmv,
-	rpu.totalav,
-	rp.section,
-	rp.parcel,
-	rp.surveyno,
-	rp.cadastrallotno,
-	rp.blockno,
-	rp.claimno,
-	rp.street,
-	o.name as lguname, 
-	b.name AS barangay,
-	pc.code AS classcode,
-	pc.name as classification 
+  ni.objid,
+  ni.assessmentnoticeid, 
+  f.objid AS faasid,
+  f.effectivityyear,
+  f.effectivityqtr,
+  f.tdno,
+  f.taxpayer_objid,
+  e.name as taxpayer_name,
+  e.address_text as taxpayer_address,
+  f.owner_name,
+  f.owner_address,
+  f.administrator_name,
+  f.administrator_address,
+  f.rpuid, 
+  f.lguid,
+  f.txntype_objid, 
+  ft.displaycode as txntype_code,
+  rpu.rputype,
+  rpu.ry,
+  rpu.fullpin ,
+  rpu.taxable,
+  rpu.totalareaha,
+  rpu.totalareasqm,
+  rpu.totalbmv,
+  rpu.totalmv,
+  rpu.totalav,
+  rp.section,
+  rp.parcel,
+  rp.surveyno,
+  rp.cadastrallotno,
+  rp.blockno,
+  rp.claimno,
+  rp.street,
+  o.name as lguname, 
+  b.name AS barangay,
+  pc.code AS classcode,
+  pc.name as classification 
 FROM assessmentnoticeitem ni 
-	INNER JOIN faas f ON ni.faasid = f.objid 
-	LEFT JOIN txnsignatory ts on ts.refid = f.objid and ts.type='APPROVER'
-	INNER JOIN rpu rpu ON f.rpuid = rpu.objid
-	INNER JOIN propertyclassification pc ON rpu.classification_objid = pc.objid
-	INNER JOIN realproperty rp ON f.realpropertyid = rp.objid
-	INNER JOIN barangay b ON rp.barangayid = b.objid 
-	INNER JOIN sys_org o ON f.lguid = o.objid 
-	INNER JOIN entity e on f.taxpayer_objid = e.objid 
-	INNER JOIN faas_txntype ft on f.txntype_objid = ft.objid 
+  INNER JOIN faas f ON ni.faasid = f.objid 
+  LEFT JOIN txnsignatory ts on ts.refid = f.objid and ts.type='APPROVER'
+  INNER JOIN rpu rpu ON f.rpuid = rpu.objid
+  INNER JOIN propertyclassification pc ON rpu.classification_objid = pc.objid
+  INNER JOIN realproperty rp ON f.realpropertyid = rp.objid
+  INNER JOIN barangay b ON rp.barangayid = b.objid 
+  INNER JOIN sys_org o ON f.lguid = o.objid 
+  INNER JOIN entity e on f.taxpayer_objid = e.objid 
+  INNER JOIN faas_txntype ft on f.txntype_objid = ft.objid 
 ;
 
 
@@ -1013,9 +1013,9 @@ select  'RPT_SEFINT_PRIOR_PROVINCE_SHARE' as objid, 'RPT_SEFINT_PRIOR_PROVINCE_S
 
 -- advance account 
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASIC_ADVANCE', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_ADVANCE', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.basicadvacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1023,18 +1023,18 @@ and m.lguid = o.objid
 
 -- current account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASIC_CURRENT', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_CURRENT', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.basiccurracct_objid = i.objid 
 and m.lguid = o.objid
 ;
 
 -- current int account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASICINT_CURRENT', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASICINT_CURRENT', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.basiccurrintacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1043,9 +1043,9 @@ and m.lguid = o.objid
 
 -- previous account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASIC_PREVIOUS', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_PREVIOUS', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.basicprevacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1054,9 +1054,9 @@ and m.lguid = o.objid
 
 -- prevint account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASICINT_PREVIOUS', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASICINT_PREVIOUS', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.basicprevintacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1064,18 +1064,18 @@ and m.lguid = o.objid
 
 -- prior account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASIC_PRIOR', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_PRIOR', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.basicprioracct_objid = i.objid 
 and m.lguid = o.objid
 ;
 
 -- priorint account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASICINT_PRIOR', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASICINT_PRIOR', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.basicpriorintacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1085,9 +1085,9 @@ and m.lguid = o.objid
 
 -- advance account 
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_SEF_ADVANCE', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEF_ADVANCE', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.sefadvacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1095,18 +1095,18 @@ and m.lguid = o.objid
 
 -- current account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_SEF_CURRENT', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEF_CURRENT', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.sefcurracct_objid = i.objid 
 and m.lguid = o.objid
 ;
 
 -- current int account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_SEFINT_CURRENT', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEFINT_CURRENT', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.sefcurrintacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1115,9 +1115,9 @@ and m.lguid = o.objid
 
 -- previous account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_SEF_PREVIOUS', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEF_PREVIOUS', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.sefprevacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1126,9 +1126,9 @@ and m.lguid = o.objid
 
 -- prevint account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_SEFINT_PREVIOUS', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEFINT_PREVIOUS', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.sefprevintacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1136,18 +1136,18 @@ and m.lguid = o.objid
 
 -- prior account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_SEF_PRIOR', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEF_PRIOR', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.sefprioracct_objid = i.objid 
 and m.lguid = o.objid
 ;
 
 -- priorint account
 update itemaccount i, municipality_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_SEFINT_PRIOR', 
-	i.org_objid = m.lguid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEFINT_PRIOR', 
+  i.org_objid = m.lguid,
+  i.org_name = o.name 
 where m.sefpriorintacct_objid = i.objid 
 and m.lguid = o.objid
 ;
@@ -1163,9 +1163,9 @@ and m.lguid = o.objid
 ===============================================================*/
 -- advance account 
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_BASIC_ADVANCE_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_ADVANCE_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.basicadvacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1173,18 +1173,18 @@ and p.objid = o.objid
 
 -- current account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_BASIC_CURRENT_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_CURRENT_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.basiccurracct_objid = i.objid 
 and p.objid = o.objid
 ;
 
 -- current int account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_BASICINT_CURRENT_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASICINT_CURRENT_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.basiccurrintacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1193,9 +1193,9 @@ and p.objid = o.objid
 
 -- previous account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_BASIC_PREVIOUS_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_PREVIOUS_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.basicprevacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1204,9 +1204,9 @@ and p.objid = o.objid
 
 -- prevint account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_BASICINT_PREVIOUS_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASICINT_PREVIOUS_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.basicprevintacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1214,18 +1214,18 @@ and p.objid = o.objid
 
 -- prior account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_BASIC_PRIOR_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_PRIOR_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.basicprioracct_objid = i.objid 
 and p.objid = o.objid
 ;
 
 -- priorint account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_BASICINT_PRIOR_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASICINT_PRIOR_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.basicpriorintacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1235,9 +1235,9 @@ and p.objid = o.objid
 
 -- advance account 
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_SEF_ADVANCE_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEF_ADVANCE_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.sefadvacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1245,18 +1245,18 @@ and p.objid = o.objid
 
 -- current account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_SEF_CURRENT_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEF_CURRENT_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.sefcurracct_objid = i.objid 
 and p.objid = o.objid
 ;
 
 -- current int account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_SEFINT_CURRENT_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEFINT_CURRENT_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.sefcurrintacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1265,9 +1265,9 @@ and p.objid = o.objid
 
 -- previous account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_SEF_PREVIOUS_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEF_PREVIOUS_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.sefprevacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1276,9 +1276,9 @@ and p.objid = o.objid
 
 -- prevint account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_SEFINT_PREVIOUS_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEFINT_PREVIOUS_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.sefprevintacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1286,18 +1286,18 @@ and p.objid = o.objid
 
 -- prior account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_SEF_PRIOR_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEF_PRIOR_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.sefprioracct_objid = i.objid 
 and p.objid = o.objid
 ;
 
 -- priorint account
 update itemaccount i, province_taxaccount_mapping p, sys_org o set 
-	i.parentid = 'RPT_SEFINT_PRIOR_PROVINCE_SHARE', 
-	i.org_objid = p.objid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_SEFINT_PRIOR_PROVINCE_SHARE', 
+  i.org_objid = p.objid,
+  i.org_name = o.name 
 where p.sefpriorintacct_objid = i.objid 
 and p.objid = o.objid
 ;
@@ -1311,9 +1311,9 @@ and p.objid = o.objid
 
 -- advance account 
 update itemaccount i, brgy_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASIC_ADVANCE_BRGY_SHARE', 
-	i.org_objid = m.barangayid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_ADVANCE_BRGY_SHARE', 
+  i.org_objid = m.barangayid,
+  i.org_name = o.name 
 where m.basicadvacct_objid = i.objid 
 and m.barangayid = o.objid
 ;
@@ -1321,18 +1321,18 @@ and m.barangayid = o.objid
 
 -- current account
 update itemaccount i, brgy_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASIC_CURRENT_BRGY_SHARE', 
-	i.org_objid = m.barangayid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_CURRENT_BRGY_SHARE', 
+  i.org_objid = m.barangayid,
+  i.org_name = o.name 
 where m.basiccurracct_objid = i.objid 
 and m.barangayid = o.objid
 ;
 
 -- current int account
 update itemaccount i, brgy_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASICINT_CURRENT_BRGY_SHARE', 
-	i.org_objid = m.barangayid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASICINT_CURRENT_BRGY_SHARE', 
+  i.org_objid = m.barangayid,
+  i.org_name = o.name 
 where m.basiccurrintacct_objid = i.objid 
 and m.barangayid = o.objid
 ;
@@ -1341,9 +1341,9 @@ and m.barangayid = o.objid
 
 -- previous account
 update itemaccount i, brgy_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASIC_PREVIOUS_BRGY_SHARE', 
-	i.org_objid = m.barangayid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_PREVIOUS_BRGY_SHARE', 
+  i.org_objid = m.barangayid,
+  i.org_name = o.name 
 where m.basicprevacct_objid = i.objid 
 and m.barangayid = o.objid
 ;
@@ -1352,9 +1352,9 @@ and m.barangayid = o.objid
 
 -- prevint account
 update itemaccount i, brgy_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASICINT_PREVIOUS_BRGY_SHARE', 
-	i.org_objid = m.barangayid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASICINT_PREVIOUS_BRGY_SHARE', 
+  i.org_objid = m.barangayid,
+  i.org_name = o.name 
 where m.basicprevintacct_objid = i.objid 
 and m.barangayid = o.objid
 ;
@@ -1362,18 +1362,18 @@ and m.barangayid = o.objid
 
 -- prior account
 update itemaccount i, brgy_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASIC_PRIOR_BRGY_SHARE', 
-	i.org_objid = m.barangayid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASIC_PRIOR_BRGY_SHARE', 
+  i.org_objid = m.barangayid,
+  i.org_name = o.name 
 where m.basicprioracct_objid = i.objid 
 and m.barangayid = o.objid
 ;
 
 -- priorint account
 update itemaccount i, brgy_taxaccount_mapping m, sys_org o set 
-	i.parentid = 'RPT_BASICINT_PRIOR_BRGY_SHARE', 
-	i.org_objid = m.barangayid,
-	i.org_name = o.name 
+  i.parentid = 'RPT_BASICINT_PRIOR_BRGY_SHARE', 
+  i.org_objid = m.barangayid,
+  i.org_name = o.name 
 where m.basicpriorintacct_objid = i.objid 
 and m.barangayid = o.objid
 ;
@@ -1697,6 +1697,11 @@ where basicidle > 0
 ;
 
 
+alter table rptpayment_share add (
+  iscommon int null, 
+  year int null 
+)
+;
 
 insert into rptpayment_share (
     objid,
@@ -2883,8 +2888,8 @@ alter table report_rptdelinquency_item
   references rptledger(objid)
 ;
 
-create index fk_rptdelinquency_item_rptledger on report_rptdelinquency_item(rptledgerid)  
-;
+-- create index fk_rptdelinquency_item_rptledger on report_rptdelinquency_item(rptledgerid)  
+-- ;
 
 alter table report_rptdelinquency_item 
   add constraint fk_rptdelinquency_item_barangay foreign key(barangayid)
@@ -2923,8 +2928,8 @@ alter table report_rptdelinquency_barangay
   references barangay(objid)
 ;
 
-create index fk_rptdelinquency_barangay_barangay on report_rptdelinquency_barangay(barangayid)  
-;
+-- create index fk_rptdelinquency_barangay_barangay on report_rptdelinquency_barangay(barangayid)  
+-- ;
 
 
 CREATE TABLE `report_rptdelinquency_forprocess` (
@@ -3041,8 +3046,8 @@ alter table report_rptdelinquency_item
   references report_rptdelinquency(objid)
 ;
 
-create index fk_rptdelinquency_item_rptdelinquency on report_rptdelinquency_item(parentid)  
-;
+-- create index fk_rptdelinquency_item_rptdelinquency on report_rptdelinquency_item(parentid)  
+-- ;
 
 
 alter table report_rptdelinquency_item 
@@ -3058,8 +3063,8 @@ alter table report_rptdelinquency_item
   references barangay(objid)
 ;
 
-create index fk_rptdelinquency_item_barangay on report_rptdelinquency_item(barangayid)  
-;
+-- create index fk_rptdelinquency_item_barangay on report_rptdelinquency_item(barangayid)  
+-- ;
 
 
 
@@ -3290,13 +3295,13 @@ create index `fk_rptledgerfaas` on rptledger_avdifference (`rptledgerfaas_objid`
 ;
  
 alter table rptledger_avdifference 
-	add CONSTRAINT `fk_rptledgerfaas` FOREIGN KEY (`rptledgerfaas_objid`) 
-	REFERENCES `rptledgerfaas` (`objid`)
+  add CONSTRAINT `fk_rptledgerfaas` FOREIGN KEY (`rptledgerfaas_objid`) 
+  REFERENCES `rptledgerfaas` (`objid`)
 ;
 
 alter table rptledger_avdifference 
-	add CONSTRAINT `fk_rptledger` FOREIGN KEY (`parent_objid`) 
-	REFERENCES `rptledger` (`objid`)
+  add CONSTRAINT `fk_rptledger` FOREIGN KEY (`parent_objid`) 
+  REFERENCES `rptledger` (`objid`)
 ;
 
 
@@ -3910,7 +3915,7 @@ INSERT INTO `sys_wf_transition` (`parentid`, `processname`, `action`, `to`, `idx
 /* 255-03001 */
 alter table rptcertification add properties text;
 
-	
+  
 alter table faas_signatory 
     add reviewer_objid varchar(50),
     add reviewer_name varchar(100),
@@ -4281,10 +4286,10 @@ alter table resection_task add returnedby varchar(100)
 *
 ================================================================*/
 
-alter table rptpayment_share 
-	add iscommon int,
-	add `year` int
-;
+-- alter table rptpayment_share 
+--   add iscommon int,
+--   add `year` int
+-- ;
 
 update rptpayment_share set iscommon = 0 where iscommon is null 
 ;
@@ -5091,9 +5096,9 @@ create index ix_state on syncdata_item(state)
 ;
 
 create table syncdata_offline_org (
-	orgid varchar(50) not null,
-	expirydate datetime not null,
-	primary key(orgid)
+  orgid varchar(50) not null,
+  expirydate datetime not null,
+  primary key(orgid)
 )
 ;
 
@@ -5111,24 +5116,24 @@ drop view if exists vw_rpu_assessment
 
 create view vw_rpu_assessment as 
 select 
-	r.objid,
-	r.rputype,
-	dpc.objid as dominantclass_objid,
-	dpc.code as dominantclass_code,
-	dpc.name as dominantclass_name,
-	dpc.orderno as dominantclass_orderno,
-	ra.areasqm,
-	ra.areaha,
-	ra.marketvalue,
-	ra.assesslevel,
-	ra.assessedvalue,
-	ra.taxable,
-	au.code as actualuse_code, 
-	au.name  as actualuse_name,
-	auc.objid as actualuse_objid,
-	auc.code as actualuse_classcode,
-	auc.name as actualuse_classname,
-	auc.orderno as actualuse_orderno
+  r.objid,
+  r.rputype,
+  dpc.objid as dominantclass_objid,
+  dpc.code as dominantclass_code,
+  dpc.name as dominantclass_name,
+  dpc.orderno as dominantclass_orderno,
+  ra.areasqm,
+  ra.areaha,
+  ra.marketvalue,
+  ra.assesslevel,
+  ra.assessedvalue,
+  ra.taxable,
+  au.code as actualuse_code, 
+  au.name  as actualuse_name,
+  auc.objid as actualuse_objid,
+  auc.code as actualuse_classcode,
+  auc.name as actualuse_classname,
+  auc.orderno as actualuse_orderno
 from rpu r 
 inner join propertyclassification dpc on r.classification_objid = dpc.objid
 inner join rpu_assessment ra on r.objid = ra.rpuid
@@ -5138,24 +5143,24 @@ left join propertyclassification auc on au.classification_objid = auc.objid
 union 
 
 select 
-	r.objid,
-	r.rputype,
-	dpc.objid as dominantclass_objid,
-	dpc.code as dominantclass_code,
-	dpc.name as dominantclass_name,
-	dpc.orderno as dominantclass_orderno,
-	ra.areasqm,
-	ra.areaha,
-	ra.marketvalue,
-	ra.assesslevel,
-	ra.assessedvalue,
-	ra.taxable,
-	au.code as actualuse_code, 
-	au.name  as actualuse_name,
-	auc.objid as actualuse_objid,
-	auc.code as actualuse_classcode,
-	auc.name as actualuse_classname,
-	auc.orderno as actualuse_orderno
+  r.objid,
+  r.rputype,
+  dpc.objid as dominantclass_objid,
+  dpc.code as dominantclass_code,
+  dpc.name as dominantclass_name,
+  dpc.orderno as dominantclass_orderno,
+  ra.areasqm,
+  ra.areaha,
+  ra.marketvalue,
+  ra.assesslevel,
+  ra.assessedvalue,
+  ra.taxable,
+  au.code as actualuse_code, 
+  au.name  as actualuse_name,
+  auc.objid as actualuse_objid,
+  auc.code as actualuse_classcode,
+  auc.name as actualuse_classname,
+  auc.orderno as actualuse_orderno
 from rpu r 
 inner join propertyclassification dpc on r.classification_objid = dpc.objid
 inner join rpu_assessment ra on r.objid = ra.rpuid
@@ -5165,24 +5170,24 @@ left join propertyclassification auc on au.classification_objid = auc.objid
 union 
 
 select 
-	r.objid,
-	r.rputype,
-	dpc.objid as dominantclass_objid,
-	dpc.code as dominantclass_code,
-	dpc.name as dominantclass_name,
-	dpc.orderno as dominantclass_orderno,
-	ra.areasqm,
-	ra.areaha,
-	ra.marketvalue,
-	ra.assesslevel,
-	ra.assessedvalue,
-	ra.taxable,
-	au.code as actualuse_code, 
-	au.name  as actualuse_name,
-	auc.objid as actualuse_objid,
-	auc.code as actualuse_classcode,
-	auc.name as actualuse_classname,
-	auc.orderno as actualuse_orderno
+  r.objid,
+  r.rputype,
+  dpc.objid as dominantclass_objid,
+  dpc.code as dominantclass_code,
+  dpc.name as dominantclass_name,
+  dpc.orderno as dominantclass_orderno,
+  ra.areasqm,
+  ra.areaha,
+  ra.marketvalue,
+  ra.assesslevel,
+  ra.assessedvalue,
+  ra.taxable,
+  au.code as actualuse_code, 
+  au.name  as actualuse_name,
+  auc.objid as actualuse_objid,
+  auc.code as actualuse_classcode,
+  auc.name as actualuse_classname,
+  auc.orderno as actualuse_orderno
 from rpu r 
 inner join propertyclassification dpc on r.classification_objid = dpc.objid
 inner join rpu_assessment ra on r.objid = ra.rpuid
@@ -5192,24 +5197,24 @@ left join propertyclassification auc on au.classification_objid = auc.objid
 union 
 
 select 
-	r.objid,
-	r.rputype,
-	dpc.objid as dominantclass_objid,
-	dpc.code as dominantclass_code,
-	dpc.name as dominantclass_name,
-	dpc.orderno as dominantclass_orderno,
-	ra.areasqm,
-	ra.areaha,
-	ra.marketvalue,
-	ra.assesslevel,
-	ra.assessedvalue,
-	ra.taxable,
-	au.code as actualuse_code, 
-	au.name  as actualuse_name,
-	auc.objid as actualuse_objid,
-	auc.code as actualuse_classcode,
-	auc.name as actualuse_classname,
-	auc.orderno as actualuse_orderno
+  r.objid,
+  r.rputype,
+  dpc.objid as dominantclass_objid,
+  dpc.code as dominantclass_code,
+  dpc.name as dominantclass_name,
+  dpc.orderno as dominantclass_orderno,
+  ra.areasqm,
+  ra.areaha,
+  ra.marketvalue,
+  ra.assesslevel,
+  ra.assessedvalue,
+  ra.taxable,
+  au.code as actualuse_code, 
+  au.name  as actualuse_name,
+  auc.objid as actualuse_objid,
+  auc.code as actualuse_classcode,
+  auc.name as actualuse_classname,
+  auc.orderno as actualuse_orderno
 from rpu r 
 inner join propertyclassification dpc on r.classification_objid = dpc.objid
 inner join rpu_assessment ra on r.objid = ra.rpuid
@@ -5219,24 +5224,24 @@ left join propertyclassification auc on au.classification_objid = auc.objid
 union 
 
 select 
-	r.objid,
-	r.rputype,
-	dpc.objid as dominantclass_objid,
-	dpc.code as dominantclass_code,
-	dpc.name as dominantclass_name,
-	dpc.orderno as dominantclass_orderno,
-	ra.areasqm,
-	ra.areaha,
-	ra.marketvalue,
-	ra.assesslevel,
-	ra.assessedvalue,
-	ra.taxable,
-	au.code as actualuse_code, 
-	au.name  as actualuse_name,
-	auc.objid as actualuse_objid,
-	auc.code as actualuse_classcode,
-	auc.name as actualuse_classname,
-	auc.orderno as actualuse_orderno
+  r.objid,
+  r.rputype,
+  dpc.objid as dominantclass_objid,
+  dpc.code as dominantclass_code,
+  dpc.name as dominantclass_name,
+  dpc.orderno as dominantclass_orderno,
+  ra.areasqm,
+  ra.areaha,
+  ra.marketvalue,
+  ra.assesslevel,
+  ra.assessedvalue,
+  ra.taxable,
+  au.code as actualuse_code, 
+  au.name  as actualuse_name,
+  auc.objid as actualuse_objid,
+  auc.code as actualuse_classcode,
+  auc.name as actualuse_classname,
+  auc.orderno as actualuse_orderno
 from rpu r 
 inner join propertyclassification dpc on r.classification_objid = dpc.objid
 inner join rpu_assessment ra on r.objid = ra.rpuid
@@ -5245,8 +5250,8 @@ left join propertyclassification auc on au.classification_objid = auc.objid
 ;
 
 alter table rptledger_item 
-	add fromqtr int,
-	add toqtr int;
+  add fromqtr int,
+  add toqtr int;
 
 DROP TABLE if exists `batch_rpttaxcredit_ledger_posted`
 ;
@@ -5279,7 +5284,7 @@ CREATE TABLE `batch_rpttaxcredit_ledger` (
   `parentid` varchar(50) NOT NULL,
   `state` varchar(25) NOT NULL,
   `error` varchar(255) NULL,
-	barangayid varchar(50) not null, 
+  barangayid varchar(50) not null, 
   PRIMARY KEY (`objid`),
   KEY `ix_parentid` (`parentid`),
   KEY `ix_state` (`state`),
@@ -5528,7 +5533,7 @@ delete from sys_rule_condition where parentid in (
 
 
 delete from sys_rule_fact_field where parentid in (
-	select objid from sys_rule_fact where domain in ('rpt', 'landtax')
+  select objid from sys_rule_fact where domain in ('rpt', 'landtax')
 )
 ;
 
@@ -5867,68 +5872,68 @@ INSERT INTO `sys_rule` (`objid`, `state`, `name`, `ruleset`, `rulegroup`, `title
 INSERT INTO `sys_rule` (`objid`, `state`, `name`, `ruleset`, `rulegroup`, `title`, `description`, `salience`, `effectivefrom`, `effectiveto`, `dtfiled`, `user_objid`, `user_name`, `noloop`, `_ukey`) VALUES ('RULec9d7ab:166235c2e16:-4197', 'DEPLOYED', 'DISCOUNT_ADVANCE', 'rptbilling', 'DISCOUNT', 'DISCOUNT_ADVANCE', NULL, '40000', NULL, NULL, '2018-09-29 00:02:22', 'USR-ADMIN', 'ADMIN', '1', '');
 INSERT INTO `sys_rule` (`objid`, `state`, `name`, `ruleset`, `rulegroup`, `title`, `description`, `salience`, `effectivefrom`, `effectiveto`, `dtfiled`, `user_objid`, `user_name`, `noloop`, `_ukey`) VALUES ('RULec9d7ab:166235c2e16:-5fcb', 'DEPLOYED', 'SPLIT_QTR', 'rptbilling', 'INIT', 'SPLIT_QTR', NULL, '50000', NULL, NULL, '2018-09-28 23:48:57', 'USR-ADMIN', 'ADMIN', '1', '');
 
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-128a4cad:146f96a678e:-7e52', '\npackage landassessment.COMPUTE_AV;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"COMPUTE_AV\"\n	agenda-group \"ASSESSEDVALUE\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		LA: rptis.land.facts.LandDetail (  MV:marketvalue,AL:assesslevel ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"LA\", LA );\n		\n		bindings.put(\"MV\", MV );\n		\n		bindings.put(\"AL\", AL );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"landdetail\", LA );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN(  MV * AL / 100.0  )\", bindings)) );\naction.execute( \"calc-av\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-1a2d6e9b:1692d429304:-7779', '\npackage rptledger.BASIC_AND_SEF;\nimport rptledger.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BASIC_AND_SEF\"\n	agenda-group \"LEDGER_ITEM\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		AVINFO: rptis.landtax.facts.AssessedValue (  YR:year,AV:av ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"AVINFO\", AVINFO );\n		\n		bindings.put(\"YR\", YR );\n		\n		bindings.put(\"AV\", AV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"avfact\", AVINFO );\n_p0.put( \"year\", YR );\n_p0.put( \"av\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-sef\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"avfact\", AVINFO );\n_p1.put( \"year\", YR );\n_p1.put( \"av\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-basic\",_p1,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-2486b0ca:146fff66c3e:-38e4', '\npackage bldgassessment.CALC_FLOOR_MARKET_VALUE;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_FLOOR_MARKET_VALUE\"\n	agenda-group \"BEFORE-MARKETVALUE\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		BF: rptis.bldg.facts.BldgFloor (  BMV:basemarketvalue,ADJ:adjustment ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BF\", BF );\n		\n		bindings.put(\"BMV\", BMV );\n		\n		bindings.put(\"ADJ\", ADJ );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bldgfloor\", BF );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND( BMV + ADJ )\", bindings)) );\naction.execute( \"calc-floor-mv\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-2486b0ca:146fff66c3e:-4192', '\npackage bldgassessment.CALC_DEPRECIATION;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_DEPRECIATION\"\n	agenda-group \"DEPRECIATION\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RPU: rptis.bldg.facts.BldgRPU (  DPRATE:depreciation ) \n		\n		BU: rptis.bldg.facts.BldgUse (  BMV:basemarketvalue,ADJUSTMENT:adjustment ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"DPRATE\", DPRATE );\n		\n		bindings.put(\"BMV\", BMV );\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"ADJUSTMENT\", ADJUSTMENT );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bldguse\", BU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(  (BMV + ADJUSTMENT) * DPRATE / 100.0 )\", bindings)) );\naction.execute( \"calc-bldguse-depreciation\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-2486b0ca:146fff66c3e:-4697', '\npackage bldgassessment.CALC_DEPRECATION_RATE_FROM_SKED;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_DEPRECATION_RATE_FROM_SKED\"\n	agenda-group \"BEFORE-DEPRECIATON\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		BS: rptis.bldg.facts.BldgStructure (   ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BS\", BS );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bldgstructure\", BS );\naction.execute( \"calc-depreciation-sked\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-2ede6703:16642adb9ce:-7ba0', '\npackage rptbilling.EXPIRY_ADVANCE_BILLING;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"EXPIRY_ADVANCE_BILLING\"\n	agenda-group \"BEFORE_SUMMARY\"\n	salience 5000\n	no-loop\n	when\n		\n		\n		BILL: rptis.landtax.facts.Bill (  advancebill == true ,BILLDATE:billdate ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BILL\", BILL );\n		\n		bindings.put(\"BILLDATE\", BILLDATE );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bill\", BILL );\n_p0.put( \"expr\", (new ActionExpression(\"@MONTHEND( BILLDATE )\", bindings)) );\naction.execute( \"set-bill-expiry\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-3a24', '\npackage rptbilling.PROMPT_FULL_JAN;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PROMPT_FULL_JAN\"\n	agenda-group \"before_misc\"\n	salience 40000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,month == 1 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,fullypaid == true ,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.15\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-3c41', '\npackage rptbilling.PENALTY_JAN_JUN_2020_ZERO_ADJUSTMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_JAN_JUN_2020_ZERO_ADJUSTMENT\"\n	agenda-group \"before_misc\"\n	salience 15000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  month <= 6 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == 2020 ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-4068', '\npackage rptbilling.DISCOUNT_EXTENSION;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_EXTENSION\"\n	agenda-group \"before_misc\"\n	salience 30000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 1,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"rptledgeritem\", RLI );\n_p1.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p1,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-418f', '\npackage rptbilling.DISCOUNT_ADJUSTMENT_NOV_AND_DEC_PAYMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADJUSTMENT_NOV_AND_DEC_PAYMENT\"\n	agenda-group \"before_misc\"\n	salience 10000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,month > 10 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 4 ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-42ba', '\npackage rptbilling.DISCOUNT_ADJUSTMENT_MAY_AND_JUNE_PAYMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADJUSTMENT_MAY_AND_JUNE_PAYMENT\"\n	agenda-group \"before_misc\"\n	salience 10000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,month > 4 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 2 ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-43e5', '\npackage rptbilling.DISCOUNT_ADJUSTMENT_FEB_AND_MAR_PAYMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADJUSTMENT_FEB_AND_MAR_PAYMENT\"\n	agenda-group \"before_misc\"\n	salience 10000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,month > 1 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 1 ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-4710', '\npackage rptbilling.DISCOUNT_ADJUSTMENT_AUG_AND_SEPT_PAYMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADJUSTMENT_AUG_AND_SEPT_PAYMENT\"\n	agenda-group \"before_misc\"\n	salience 10000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,month > 7 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 3 ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-4b8b', '\npackage rptbilling.PENALTY_1992_2019;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_1992_2019\"\n	agenda-group \"before_misc\"\n	salience 40000\n	no-loop\n	when\n		\n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= 1992,year <= 2019,NMON:monthsfromjan,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"NMON\", NMON );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@IIF(  (NMON - 6) * 0.02 > 0.72 , TAX * 0.72 , TAX * ( NMON - 6 ) * 0.02  )\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-5f60', '\npackage rptbilling.TAX_DIFF_ADJUSTMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TAX_DIFF_ADJUSTMENT\"\n	agenda-group \"AFTER_DISCOUNT\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  taxdifference == true  ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"rptledgeritem\", RLI );\n_p1.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p1,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6062', '\npackage rptbilling.PDIC_ADJUSTMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PDIC_ADJUSTMENT\"\n	agenda-group \"AFTER_DISCOUNT\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RL: rptis.landtax.facts.RPTLedgerFact (  objid matches \"F-1673db6a:14e050a97f2:4fd5|F-1673db6a:14e470ce26e:-704e|F-33858dd0:14e9552cdf3:5ab7|F-33858dd0:14ee17af8ba:-4366|F-1673db6a:14dc171a0f0:14a7|F-33858dd0:14ecd858e3a:7157|F-33858dd0:14ee17af8ba:-e43|F-1673db6a:14e050a97f2:6793|F-1673db6a:14e050a97f2:5e92\" ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (   ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RL\", RL );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"rptledgeritem\", RLI );\n_p1.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p1,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-63b3', '\npackage rptbilling.PDIC_ADJ;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PDIC_ADJ\"\n	agenda-group \"AFTER_DISCOUNT\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RL: rptis.landtax.facts.RPTLedgerFact (  objid matches \"F-456b29fa:14f5e6a63aa:-2e70\" ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= 2006,year <= 2010 ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RL\", RL );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"rptledgeritem\", RLI );\n_p1.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p1,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-648d', '\npackage rptbilling.QTR4_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"QTR4_DISCOUNT\"\n	agenda-group \"AFTER_DISCOUNT\"\n	salience 30000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,CQTR:qtr,month == 10 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == CQTR,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"CQTR\", CQTR );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.10\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6569', '\npackage rptbilling.QTR3_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"QTR3_DISCOUNT\"\n	agenda-group \"AFTER_DISCOUNT\"\n	salience 30000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,CQTR:qtr,month == 7 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == CQTR,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"CQTR\", CQTR );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.10\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6640', '\npackage rptbilling.QTR2_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"QTR2_DISCOUNT\"\n	agenda-group \"AFTER_DISCOUNT\"\n	salience 30000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,CQTR:qtr,month == 4 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == CQTR,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"CQTR\", CQTR );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.10\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6ad1', '\npackage rptbilling.QTR1_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"QTR1_DISCOUNT\"\n	agenda-group \"AFTER_DISCOUNT\"\n	salience 30000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,CQTR:qtr,month == 1 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == CQTR,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"CQTR\", CQTR );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.10\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6d36', '\npackage rptbilling.BACKTAX_NO_PENALTY;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BACKTAX_NO_PENALTY\"\n	agenda-group \"AFTER_PENALTY\"\n	salience 40000\n	no-loop\n	when\n		\n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  backtax == true  ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-3e8edbea:156bc08656a:-5f05', '\npackage landassessment.RECALC_RPU_TOTAL_AV;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_RPU_TOTAL_AV\"\n	agenda-group \"AFTER-SUMMARY\"\n	salience 30000\n	no-loop\n	when\n		\n		\n		RPU: rptis.facts.RPU (   ) \n		\n		VAR: rptis.facts.RPTVariable (  varid matches \"TOTAL_VALUE\",AV:value ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"VAR\", VAR );\n		\n		bindings.put(\"AV\", AV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"recalc-rpu-totalav\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:-2021', '\npackage bldgassessment.CALC_ACTUAL_USE_MV;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_ACTUAL_USE_MV\"\n	agenda-group \"MARKETVALUE\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		BU: rptis.bldg.facts.BldgUse (  BMV:basemarketvalue,DEP:depreciationvalue,ADJ:adjustment ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"BMV\", BMV );\n		\n		bindings.put(\"DEP\", DEP );\n		\n		bindings.put(\"ADJ\", ADJ );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bldguse\", BU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND( BMV + ADJ - DEP )\", bindings)) );\naction.execute( \"calc-bldguse-mv\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:-482b', '\npackage rptbilling.CURRENT_YEAR_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CURRENT_YEAR_DISCOUNT\"\n	agenda-group \"DISCOUNT\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CQTR:qtr,CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr >= CQTR,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CQTR\", CQTR );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(TAX * 0.10)\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:-7250', '\npackage rptbilling.PENALTY_1974_TO_1991;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_1974_TO_1991\"\n	agenda-group \"PENALTY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= 1974,year <= 1991,backtax == false ,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(TAX * 0.24)\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:-7591', '\npackage rptbilling.PENALTY_1973_BELOW;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_1973_BELOW\"\n	agenda-group \"PENALTY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year <= 1973,backtax == false ,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.12\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:143', '\npackage machassessment.RECALC_RPU_TOTALAV;\nimport machassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_RPU_TOTALAV\"\n	agenda-group \"AFTER-SUMMARY\"\n	salience 60000\n	no-loop\n	when\n		\n		\n		RPU: rptis.facts.RPU (  REFID:objid ) \n		\n		VAR: rptis.facts.RPTVariable (  varid matches \"TOTAL_VALUE\",AV:value ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"REFID\", REFID );\n		\n		bindings.put(\"VAR\", VAR );\n		\n		bindings.put(\"AV\", AV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"recalc-rpu-totalav\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-60c99d04:1470b276e7f:-7ecc', '\npackage bldgassessment.CALC_BMV;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_BMV\"\n	agenda-group \"BASEMARKETVALUE\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		BS: rptis.bldg.facts.BldgStructure (  BASEAREA:basefloorarea ) \n		\n		BU: rptis.bldg.facts.BldgUse (  bldgstructure == BS,BASEVALUE:basevalue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BS\", BS );\n		\n		bindings.put(\"BASEAREA\", BASEAREA );\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"BASEVALUE\", BASEVALUE );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bldguse\", BU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND( BASEAREA * BASEVALUE )\", bindings)) );\naction.execute( \"calc-bldguse-bmv\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-762e9176:15d067a9c42:-5aa0', '\npackage miscassessment.RECALC_RPU_TOTAL_AV;\nimport miscassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_RPU_TOTAL_AV\"\n	agenda-group \"AFTER-SUMMARY\"\n	salience 60000\n	no-loop\n	when\n		\n		\n		VAR: rptis.facts.RPTVariable (  varid matches \"TOTAL_VALUE\",TOTALAV:value ) \n		\n		RPU: rptis.facts.RPU (   ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"VAR\", VAR );\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"TOTALAV\", TOTALAV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN( TOTALAV)\", bindings)) );\naction.execute( \"recalc-rpu-totalav\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-762e9176:15d067a9c42:-5e26', '\npackage miscassessment.CALC_TOTAL_ASSESSEMENT_AV;\nimport miscassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_TOTAL_ASSESSEMENT_AV\"\n	agenda-group \"AFTER-SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RA: rptis.facts.RPUAssessment (  actualuseid != null,AV:assessedvalue ) \n		\n		RPU: rptis.facts.RPU (  RPUID:objid ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RA\", RA );\n		\n		bindings.put(\"RPUID\", RPUID );\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"AV\", AV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"refid\", RPUID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_VALUE\", \"TOTAL_VALUE\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-79a9a347:15cfcae84de:-55fd', '\npackage landassessment.CALC_TOTAL_ASSESSEMENT_AV;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_TOTAL_ASSESSEMENT_AV\"\n	agenda-group \"AFTER-SUMMARY\"\n	salience 40000\n	no-loop\n	when\n		\n		\n		RA: rptis.facts.RPUAssessment (  actualuseid != null,AV:assessedvalue ) \n		\n		RPU: rptis.facts.RPU (  RPUID:objid ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RA\", RA );\n		\n		bindings.put(\"RPUID\", RPUID );\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"AV\", AV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"refid\", RPUID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_VALUE\", \"TOTAL_VALUE\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-derive-var\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-79a9a347:15cfcae84de:4f83', '\npackage planttreeassessment.CALC_TOTAL_ASSESSEMENT_AV;\nimport planttreeassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_TOTAL_ASSESSEMENT_AV\"\n	agenda-group \"AFTER-SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RA: rptis.facts.RPUAssessment (  actualuseid != null,AV:assessedvalue ) \n		\n		RPU: rptis.facts.RPU (  RPUID:objid ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RA\", RA );\n		\n		bindings.put(\"RPUID\", RPUID );\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"AV\", AV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"refid\", RPUID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_VALUE\", \"TOTAL_VALUE\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-79a9a347:15cfcae84de:549e', '\npackage planttreeassessment.RECALC_TOTAL_AV;\nimport planttreeassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_TOTAL_AV\"\n	agenda-group \"AFTER-SUMMARY\"\n	salience 60000\n	no-loop\n	when\n		\n		\n		RPU: rptis.facts.RPU (   ) \n		\n		VAR: rptis.facts.RPTVariable (  varid matches \"TOTAL_VALUE\",TOTALAV:value ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"VAR\", VAR );\n		\n		bindings.put(\"TOTALAV\", TOTALAV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN(TOTALAV)\", bindings)) );\naction.execute( \"recalc-rpu-totalav\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL1262ad19:166ae41b1fb:-7c88', '\npackage rptbilling.TOTAL_PREVIOUS;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_PREVIOUS\"\n	agenda-group \"SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year < CY ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"revperiod\", \"previous\" );\naction.execute( \"create-tax-summary\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL1441128c:1471efa4c1c:-6b41', '\npackage bldgassessment.CALC_ASSESS_VALUE;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_ASSESS_VALUE\"\n	agenda-group \"ASSESSVALUE\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		BA: rptis.facts.RPUAssessment (  actualuseid != null,MV:marketvalue,AL:assesslevel ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BA\", BA );\n		\n		bindings.put(\"MV\", MV );\n		\n		bindings.put(\"AL\", AL );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"assessment\", BA );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN(  MV * AL  / 100.0 )\", bindings)) );\naction.execute( \"calc-assess-value\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL1441128c:1471efa4c1c:-6c93', '\npackage bldgassessment.CALC_ASSESS_LEVEL;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_ASSESS_LEVEL\"\n	agenda-group \"AFTER-ASSESSLEVEL\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		BA: rptis.facts.RPUAssessment (  actualuseid != null ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BA\", BA );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"assessment\", BA );\naction.execute( \"calc-assess-level\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL1441128c:1471efa4c1c:-6eaa', '\npackage bldgassessment.BUILD_ASSESSMENT_INFO;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BUILD_ASSESSMENT_INFO\"\n	agenda-group \"BEFORE-ASSESSLEVEL\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		BU: rptis.bldg.facts.BldgUse (  ACTUALUSE:actualuseid != null ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"ACTUALUSE\", ACTUALUSE );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bldguse\", BU );\n_p0.put( \"actualuseid\", ACTUALUSE );\naction.execute( \"add-assessment-info\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL3e2b89cb:146ff734573:-7dcc', '\npackage bldgassessment.COMPUTE_BLDG_AGE;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"COMPUTE_BLDG_AGE\"\n	agenda-group \"PRE-ASSESSMENT\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RPU: rptis.bldg.facts.BldgRPU (  YRAPPRAISED:yrappraised > 0,YRCOMPLETED:yrcompleted > 0 ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"YRAPPRAISED\", YRAPPRAISED );\n		\n		bindings.put(\"YRCOMPLETED\", YRCOMPLETED );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"YRAPPRAISED - YRCOMPLETED\", bindings)) );\naction.execute( \"calc-bldg-age\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL3e7cce43:16b25a6ae3b:-2657', '\npackage rptbilling.PENALTY_1992_TO_LESS_CY;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_1992_TO_LESS_CY\"\n	agenda-group \"PENALTY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= 1992,year < CY,backtax == false ,TAX:amtdue,NMON:monthsfromjan ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"TAX\", TAX );\n		\n		bindings.put(\"NMON\", NMON );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(@IIF( NMON * 0.02 > 0.72, TAX * 0.72, TAX * NMON * 0.02))\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL483027b0:16be9375c61:-77e6', '\npackage rptledger.BASIC_AND_SEF_TAX;\nimport rptledger.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BASIC_AND_SEF_TAX\"\n	agenda-group \"TAX\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  AV:av,revtype matches \"basic|sef\" ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"AV\", AV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"AV * 0.01\", bindings)) );\naction.execute( \"calc-tax\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5b4ac915:147baaa06b4:-6f31', '\npackage landassessment.BUILD_ASSESSMENT_INFO_SPLIT;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BUILD_ASSESSMENT_INFO_SPLIT\"\n	agenda-group \"SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		LA: rptis.land.facts.LandDetail (  CLASS:classification != null ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"LA\", LA );\n		\n		bindings.put(\"CLASS\", CLASS );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"landdetail\", LA );\n_p0.put( \"classification\", CLASS );\naction.execute( \"add-assessment-info\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-41a3', '\npackage machassessment.CALC_TOTAL_AV;\nimport machassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_TOTAL_AV\"\n	agenda-group \"AFTER-SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RA: rptis.facts.RPUAssessment (  actualuseid != null,AV:assessedvalue,taxable == true  ) \n		\n		RPU: rptis.facts.RPU (  RPUID:objid ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RA\", RA );\n		\n		bindings.put(\"RPUID\", RPUID );\n		\n		bindings.put(\"RPU\", RPU );\n		\n		bindings.put(\"AV\", AV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"refid\", RPUID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_VALUE\", \"TOTAL_VALUE\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-4ed3', '\npackage bldgassessment.UPDATE_HAULING4;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"UPDATE_HAULING4\"\n	agenda-group \"AFTER-ADJUSTMENT\"\n	salience 5000\n	no-loop\n	when\n		\n		\n		BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n		\n		ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,additionalitemcode matches \"HAU4\" ) \n		\n		VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_AMOUNT_FOR_HAULING\",ADJAMOUNT:value ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"REFID\", REFID );\n		\n		bindings.put(\"ADJ\", ADJ );\n		\n		bindings.put(\"VAR\", VAR );\n		\n		bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\n_p0.put( \"var\", VAR );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT * 0.30\", bindings)) );\naction.execute( \"calc-adj\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-4ff2', '\npackage bldgassessment.UPDATE_HAULING3;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"UPDATE_HAULING3\"\n	agenda-group \"AFTER-ADJUSTMENT\"\n	salience 10000\n	no-loop\n	when\n		\n		\n		BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n		\n		ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,additionalitemcode matches \"HAU3\" ) \n		\n		VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_AMOUNT_FOR_HAULING\",ADJAMOUNT:value ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"REFID\", REFID );\n		\n		bindings.put(\"ADJ\", ADJ );\n		\n		bindings.put(\"VAR\", VAR );\n		\n		bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\n_p0.put( \"var\", VAR );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT * 0.20\", bindings)) );\naction.execute( \"calc-adj\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-50fd', '\npackage bldgassessment.UPDATE_HAULING2;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"UPDATE_HAULING2\"\n	agenda-group \"AFTER-ADJUSTMENT\"\n	salience 15000\n	no-loop\n	when\n		\n		\n		BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n		\n		ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,additionalitemcode matches \"HAU2\" ) \n		\n		VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_AMOUNT_FOR_HAULING\",ADJAMOUNT:value ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"REFID\", REFID );\n		\n		bindings.put(\"ADJ\", ADJ );\n		\n		bindings.put(\"VAR\", VAR );\n		\n		bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\n_p0.put( \"var\", VAR );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT * 0.10\", bindings)) );\naction.execute( \"calc-adj\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-560c', '\npackage bldgassessment.UPDATE_HAULING;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"UPDATE_HAULING\"\n	agenda-group \"AFTER-ADJUSTMENT\"\n	salience 20000\n	no-loop\n	when\n		\n		\n		BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n		\n		ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,additionalitemcode matches \"HAU1\" ) \n		\n		VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_AMOUNT_FOR_HAULING\",ADJAMOUNT:value ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"REFID\", REFID );\n		\n		bindings.put(\"ADJ\", ADJ );\n		\n		bindings.put(\"VAR\", VAR );\n		\n		bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\n_p0.put( \"var\", VAR );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT * 0.05\", bindings)) );\naction.execute( \"calc-adj\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-5aab', '\npackage bldgassessment.TOTAL_AMOUNT_FOR_HAULING;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_AMOUNT_FOR_HAULING\"\n	agenda-group \"AFTER-ADJUSTMENT\"\n	salience 40000\n	no-loop\n	when\n		\n		\n		BU: rptis.bldg.facts.BldgUse (  BMV:basemarketvalue,REFID:objid ) \n		\n		VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_ADJUSTMENT_BEFORE_HAULING\",ADJAMOUNT:value ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"BMV\", BMV );\n		\n		bindings.put(\"VAR\", VAR );\n		\n		bindings.put(\"REFID\", REFID );\n		\n		bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"refid\", REFID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_AMOUNT_FOR_HAULING\", \"TOTAL_AMOUNT_FOR_HAULING\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"BMV + ADJAMOUNT\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-6215', '\npackage bldgassessment.TOTAL_ADJUSTMENT_BEFORE_HAULLING;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_ADJUSTMENT_BEFORE_HAULLING\"\n	agenda-group \"ADJUSTMENT\"\n	salience 10000\n	no-loop\n	when\n		\n		\n		BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n		\n		ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,ADJAMOUNT:amount ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BU\", BU );\n		\n		bindings.put(\"REFID\", REFID );\n		\n		bindings.put(\"ADJ\", ADJ );\n		\n		bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"refid\", REFID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_ADJUSTMENT_BEFORE_HAULING\", \"TOTAL_ADJUSTMENT_BEFORE_HAULING\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-678e', '\npackage bldgassessment.CALC_FLOOR_BMV;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_FLOOR_BMV\"\n	agenda-group \"FLOOR\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		BF: rptis.bldg.facts.BldgFloor (  AREA:area,UV:unitvalue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BF\", BF );\n		\n		bindings.put(\"AREA\", AREA );\n		\n		bindings.put(\"UV\", UV );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bldgfloor\", BF );\n_p0.put( \"expr\", (new ActionExpression(\"AREA * UV\", bindings)) );\naction.execute( \"calc-floor-bmv\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-69b3', '\npackage bldgassessment.CLEAR_HAULING_ADJUSTMENTS;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CLEAR_HAULING_ADJUSTMENTS\"\n	agenda-group \"PRE-ASSESSMENT\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,additionalitemcode matches \"HAU.*\" ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"ADJ\", ADJ );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\naction.execute( \"reset-adj\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL651fad8c:178b43c2223:-74b7', '\npackage landassessment.RECALC_AV;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_AV\"\n	agenda-group \"AFTER-SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RA: rptis.facts.RPUAssessment (  actualuseid != null,MV:marketvalue,AL:assesslevel ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RA\", RA );\n		\n		bindings.put(\"MV\", MV );\n		\n		bindings.put(\"AL\", AL );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rpuassessment\", RA );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN( MV * AL / 100.0  )\", bindings)) );\naction.execute( \"recalc-rpuassessment\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL7e02b404:166ae687f42:-5511', '\npackage rptbilling.PENALTY_CURRENT_YEAR;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_CURRENT_YEAR\"\n	agenda-group \"PENALTY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year,CQTR:qtr > 1 ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  revtype matches \"basic|sef\",year == CY,qtr < CQTR,TAX:amtdue,NMON:monthsfromqtr ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"CQTR\", CQTR );\n		\n		bindings.put(\"TAX\", TAX );\n		\n		bindings.put(\"NMON\", NMON );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * NMON * 0.02\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-255e', '\npackage rptbilling.BUILD_BILL_ITEMS;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BUILD_BILL_ITEMS\"\n	agenda-group \"AFTER_SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RLTS: rptis.landtax.facts.RPTLedgerTaxSummaryFact (   ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RLTS\", RLTS );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"taxsummary\", RLTS );\naction.execute( \"add-billitem\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-26bf', '\npackage rptbilling.TOTAL_ADVANCE;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_ADVANCE\"\n	agenda-group \"SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year > CY ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"revperiod\", \"advance\" );\naction.execute( \"create-tax-summary\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-26d0', '\npackage rptbilling.TOTAL_CURRENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_CURRENT\"\n	agenda-group \"SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"revperiod\", \"current\" );\naction.execute( \"create-tax-summary\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-2f1f', '\npackage rptbilling.EXPIRY_DATE_DEFAULT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"EXPIRY_DATE_DEFAULT\"\n	agenda-group \"BEFORE_SUMMARY\"\n	salience 10000\n	no-loop\n	when\n		\n		\n		BILL: rptis.landtax.facts.Bill (  CDATE:currentdate ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"BILL\", BILL );\n		\n		bindings.put(\"CDATE\", CDATE );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bill\", BILL );\n_p0.put( \"expr\", (new ActionExpression(\"@MONTHEND( CDATE )\", bindings)) );\naction.execute( \"set-bill-expiry\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-319f', '\npackage rptbilling.EXPIRY_DATE_ADVANCE_YEAR;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"EXPIRY_DATE_ADVANCE_YEAR\"\n	agenda-group \"BEFORE_SUMMARY\"\n	salience 5000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RL: rptis.landtax.facts.RPTLedgerFact (  lastyearpaid == CY,lastqtrpaid == 4 ) \n		\n		BILL: rptis.landtax.facts.Bill (  billtoyear > CY ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RL\", RL );\n		\n		bindings.put(\"BILL\", BILL );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"bill\", BILL );\n_p0.put( \"expr\", (new ActionExpression(\"@MONTHEND(@DATE(CY, 12, 1));\", bindings)) );\naction.execute( \"set-bill-expiry\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-3811', '\npackage rptbilling.SPLIT_QUARTERLY_BILLED_ITEMS;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"SPLIT_QUARTERLY_BILLED_ITEMS\"\n	agenda-group \"BEFORE_SUMMARY\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  qtrly == false ,revtype matches \"basic|sef\" ) \n		\n		BILL: rptis.landtax.facts.Bill (  forpayment == true  ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"BILL\", BILL );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\naction.execute( \"split-bill-item\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-3c17', '\npackage rptbilling.AGGREGATE_PREVIOUS_ITEMS;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"AGGREGATE_PREVIOUS_ITEMS\"\n	agenda-group \"BEFORE_SUMMARY\"\n	salience 60000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year < CY,qtrly == true  ) \n		\n		BILL: rptis.landtax.facts.Bill (  forpayment == false  ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"BILL\", BILL );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\naction.execute( \"aggregate-bill-item\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-4197', '\npackage rptbilling.DISCOUNT_ADVANCE;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADVANCE\"\n	agenda-group \"DISCOUNT\"\n	salience 40000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year > CY,TAX:amtdue ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n		bindings.put(\"TAX\", TAX );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(TAX * 0.20)\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n	');
-INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-5fcb', '\npackage rptbilling.SPLIT_QTR;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"SPLIT_QTR\"\n	agenda-group \"INIT\"\n	salience 50000\n	no-loop\n	when\n		\n		\n		 CurrentDate (  CY:year ) \n		\n		RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= CY ) \n		\n	then\n		Map bindings = new HashMap();\n		\n		bindings.put(\"CY\", CY );\n		\n		bindings.put(\"RLI\", RLI );\n		\n	Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\naction.execute( \"split-by-qtr\",_p0,drools);\n\nend\n\n\n	');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-128a4cad:146f96a678e:-7e52', '\npackage landassessment.COMPUTE_AV;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"COMPUTE_AV\"\n  agenda-group \"ASSESSEDVALUE\"\n  salience 50000\n  no-loop\n when\n    \n    \n    LA: rptis.land.facts.LandDetail (  MV:marketvalue,AL:assesslevel ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"LA\", LA );\n    \n    bindings.put(\"MV\", MV );\n    \n    bindings.put(\"AL\", AL );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"landdetail\", LA );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN(  MV * AL / 100.0  )\", bindings)) );\naction.execute( \"calc-av\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-1a2d6e9b:1692d429304:-7779', '\npackage rptledger.BASIC_AND_SEF;\nimport rptledger.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BASIC_AND_SEF\"\n  agenda-group \"LEDGER_ITEM\"\n  salience 50000\n  no-loop\n when\n    \n    \n    AVINFO: rptis.landtax.facts.AssessedValue (  YR:year,AV:av ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"AVINFO\", AVINFO );\n    \n    bindings.put(\"YR\", YR );\n    \n    bindings.put(\"AV\", AV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"avfact\", AVINFO );\n_p0.put( \"year\", YR );\n_p0.put( \"av\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-sef\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"avfact\", AVINFO );\n_p1.put( \"year\", YR );\n_p1.put( \"av\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-basic\",_p1,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-2486b0ca:146fff66c3e:-38e4', '\npackage bldgassessment.CALC_FLOOR_MARKET_VALUE;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_FLOOR_MARKET_VALUE\"\n  agenda-group \"BEFORE-MARKETVALUE\"\n salience 50000\n  no-loop\n when\n    \n    \n    BF: rptis.bldg.facts.BldgFloor (  BMV:basemarketvalue,ADJ:adjustment ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BF\", BF );\n    \n    bindings.put(\"BMV\", BMV );\n    \n    bindings.put(\"ADJ\", ADJ );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bldgfloor\", BF );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND( BMV + ADJ )\", bindings)) );\naction.execute( \"calc-floor-mv\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-2486b0ca:146fff66c3e:-4192', '\npackage bldgassessment.CALC_DEPRECIATION;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_DEPRECIATION\"\n  agenda-group \"DEPRECIATION\"\n salience 50000\n  no-loop\n when\n    \n    \n    RPU: rptis.bldg.facts.BldgRPU (  DPRATE:depreciation ) \n   \n    BU: rptis.bldg.facts.BldgUse (  BMV:basemarketvalue,ADJUSTMENT:adjustment ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"DPRATE\", DPRATE );\n    \n    bindings.put(\"BMV\", BMV );\n    \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"ADJUSTMENT\", ADJUSTMENT );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bldguse\", BU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(  (BMV + ADJUSTMENT) * DPRATE / 100.0 )\", bindings)) );\naction.execute( \"calc-bldguse-depreciation\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-2486b0ca:146fff66c3e:-4697', '\npackage bldgassessment.CALC_DEPRECATION_RATE_FROM_SKED;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_DEPRECATION_RATE_FROM_SKED\"\n  agenda-group \"BEFORE-DEPRECIATON\"\n salience 50000\n  no-loop\n when\n    \n    \n    BS: rptis.bldg.facts.BldgStructure (   ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BS\", BS );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bldgstructure\", BS );\naction.execute( \"calc-depreciation-sked\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-2ede6703:16642adb9ce:-7ba0', '\npackage rptbilling.EXPIRY_ADVANCE_BILLING;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"EXPIRY_ADVANCE_BILLING\"\n  agenda-group \"BEFORE_SUMMARY\"\n salience 5000\n no-loop\n when\n    \n    \n    BILL: rptis.landtax.facts.Bill (  advancebill == true ,BILLDATE:billdate ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BILL\", BILL );\n    \n    bindings.put(\"BILLDATE\", BILLDATE );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bill\", BILL );\n_p0.put( \"expr\", (new ActionExpression(\"@MONTHEND( BILLDATE )\", bindings)) );\naction.execute( \"set-bill-expiry\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-3a24', '\npackage rptbilling.PROMPT_FULL_JAN;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PROMPT_FULL_JAN\"\n  agenda-group \"before_misc\"\n  salience 40000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,month == 1 ) \n   \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,fullypaid == true ,TAX:amtdue ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.15\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-3c41', '\npackage rptbilling.PENALTY_JAN_JUN_2020_ZERO_ADJUSTMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_JAN_JUN_2020_ZERO_ADJUSTMENT\"\n  agenda-group \"before_misc\"\n  salience 15000\n  no-loop\n when\n    \n    \n     CurrentDate (  month <= 6 ) \n   \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == 2020 ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-4068', '\npackage rptbilling.DISCOUNT_EXTENSION;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_EXTENSION\"\n  agenda-group \"before_misc\"\n  salience 30000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 1,TAX:amtdue ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"rptledgeritem\", RLI );\n_p1.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p1,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-418f', '\npackage rptbilling.DISCOUNT_ADJUSTMENT_NOV_AND_DEC_PAYMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADJUSTMENT_NOV_AND_DEC_PAYMENT\"\n  agenda-group \"before_misc\"\n  salience 10000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,month > 10 ) \n   \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 4 ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-42ba', '\npackage rptbilling.DISCOUNT_ADJUSTMENT_MAY_AND_JUNE_PAYMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADJUSTMENT_MAY_AND_JUNE_PAYMENT\"\n  agenda-group \"before_misc\"\n  salience 10000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,month > 4 ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 2 ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-43e5', '\npackage rptbilling.DISCOUNT_ADJUSTMENT_FEB_AND_MAR_PAYMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADJUSTMENT_FEB_AND_MAR_PAYMENT\"\n  agenda-group \"before_misc\"\n  salience 10000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,month > 1 ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 1 ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-4710', '\npackage rptbilling.DISCOUNT_ADJUSTMENT_AUG_AND_SEPT_PAYMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADJUSTMENT_AUG_AND_SEPT_PAYMENT\"\n  agenda-group \"before_misc\"\n  salience 10000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,month > 7 ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == 3 ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-4b8b', '\npackage rptbilling.PENALTY_1992_2019;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_1992_2019\"\n  agenda-group \"before_misc\"\n  salience 40000\n  no-loop\n when\n    \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= 1992,year <= 2019,NMON:monthsfromjan,TAX:amtdue ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"NMON\", NMON );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@IIF(  (NMON - 6) * 0.02 > 0.72 , TAX * 0.72 , TAX * ( NMON - 6 ) * 0.02  )\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-5f60', '\npackage rptbilling.TAX_DIFF_ADJUSTMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TAX_DIFF_ADJUSTMENT\"\n  agenda-group \"AFTER_DISCOUNT\"\n salience 50000\n  no-loop\n when\n    \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  taxdifference == true  ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"rptledgeritem\", RLI );\n_p1.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p1,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6062', '\npackage rptbilling.PDIC_ADJUSTMENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PDIC_ADJUSTMENT\"\n  agenda-group \"AFTER_DISCOUNT\"\n salience 50000\n  no-loop\n when\n    \n    \n    RL: rptis.landtax.facts.RPTLedgerFact (  objid matches \"F-1673db6a:14e050a97f2:4fd5|F-1673db6a:14e470ce26e:-704e|F-33858dd0:14e9552cdf3:5ab7|F-33858dd0:14ee17af8ba:-4366|F-1673db6a:14dc171a0f0:14a7|F-33858dd0:14ecd858e3a:7157|F-33858dd0:14ee17af8ba:-e43|F-1673db6a:14e050a97f2:6793|F-1673db6a:14e050a97f2:5e92\" ) \n   \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (   ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RL\", RL );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"rptledgeritem\", RLI );\n_p1.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p1,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-63b3', '\npackage rptbilling.PDIC_ADJ;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PDIC_ADJ\"\n  agenda-group \"AFTER_DISCOUNT\"\n salience 50000\n  no-loop\n when\n    \n    \n    RL: rptis.landtax.facts.RPTLedgerFact (  objid matches \"F-456b29fa:14f5e6a63aa:-2e70\" ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= 2006,year <= 2010 ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RL\", RL );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\nMap _p1 = new HashMap();\n_p1.put( \"rptledgeritem\", RLI );\n_p1.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p1,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-648d', '\npackage rptbilling.QTR4_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"QTR4_DISCOUNT\"\n  agenda-group \"AFTER_DISCOUNT\"\n salience 30000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,CQTR:qtr,month == 10 ) \n   \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == CQTR,TAX:amtdue ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"CQTR\", CQTR );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.10\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6569', '\npackage rptbilling.QTR3_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"QTR3_DISCOUNT\"\n  agenda-group \"AFTER_DISCOUNT\"\n salience 30000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,CQTR:qtr,month == 7 ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == CQTR,TAX:amtdue ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"CQTR\", CQTR );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.10\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6640', '\npackage rptbilling.QTR2_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"QTR2_DISCOUNT\"\n  agenda-group \"AFTER_DISCOUNT\"\n salience 30000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,CQTR:qtr,month == 4 ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == CQTR,TAX:amtdue ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"CQTR\", CQTR );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.10\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6ad1', '\npackage rptbilling.QTR1_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"QTR1_DISCOUNT\"\n  agenda-group \"AFTER_DISCOUNT\"\n salience 30000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,CQTR:qtr,month == 1 ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr == CQTR,TAX:amtdue ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"CQTR\", CQTR );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.10\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-33cdb157:178b179a470:-6d36', '\npackage rptbilling.BACKTAX_NO_PENALTY;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BACKTAX_NO_PENALTY\"\n  agenda-group \"AFTER_PENALTY\"\n  salience 40000\n  no-loop\n when\n    \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  backtax == true  ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"0\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-3e8edbea:156bc08656a:-5f05', '\npackage landassessment.RECALC_RPU_TOTAL_AV;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_RPU_TOTAL_AV\"\n  agenda-group \"AFTER-SUMMARY\"\n  salience 30000\n  no-loop\n when\n    \n    \n    RPU: rptis.facts.RPU (   ) \n   \n    VAR: rptis.facts.RPTVariable (  varid matches \"TOTAL_VALUE\",AV:value ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"VAR\", VAR );\n    \n    bindings.put(\"AV\", AV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"recalc-rpu-totalav\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:-2021', '\npackage bldgassessment.CALC_ACTUAL_USE_MV;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_ACTUAL_USE_MV\"\n  agenda-group \"MARKETVALUE\"\n  salience 50000\n  no-loop\n when\n    \n    \n    BU: rptis.bldg.facts.BldgUse (  BMV:basemarketvalue,DEP:depreciationvalue,ADJ:adjustment ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"BMV\", BMV );\n    \n    bindings.put(\"DEP\", DEP );\n    \n    bindings.put(\"ADJ\", ADJ );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bldguse\", BU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND( BMV + ADJ - DEP )\", bindings)) );\naction.execute( \"calc-bldguse-mv\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:-482b', '\npackage rptbilling.CURRENT_YEAR_DISCOUNT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CURRENT_YEAR_DISCOUNT\"\n  agenda-group \"DISCOUNT\"\n salience 50000\n  no-loop\n when\n    \n    \n     CurrentDate (  CQTR:qtr,CY:year ) \n   \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY,qtr >= CQTR,TAX:amtdue ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CQTR\", CQTR );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(TAX * 0.10)\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:-7250', '\npackage rptbilling.PENALTY_1974_TO_1991;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_1974_TO_1991\"\n  agenda-group \"PENALTY\"\n  salience 50000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= 1974,year <= 1991,backtax == false ,TAX:amtdue ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(TAX * 0.24)\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:-7591', '\npackage rptbilling.PENALTY_1973_BELOW;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_1973_BELOW\"\n  agenda-group \"PENALTY\"\n  salience 50000\n  no-loop\n when\n    \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year <= 1973,backtax == false ,TAX:amtdue ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * 0.12\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-479f9644:17849e550ea:143', '\npackage machassessment.RECALC_RPU_TOTALAV;\nimport machassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_RPU_TOTALAV\"\n  agenda-group \"AFTER-SUMMARY\"\n  salience 60000\n  no-loop\n when\n    \n    \n    RPU: rptis.facts.RPU (  REFID:objid ) \n    \n    VAR: rptis.facts.RPTVariable (  varid matches \"TOTAL_VALUE\",AV:value ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"REFID\", REFID );\n    \n    bindings.put(\"VAR\", VAR );\n    \n    bindings.put(\"AV\", AV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"recalc-rpu-totalav\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-60c99d04:1470b276e7f:-7ecc', '\npackage bldgassessment.CALC_BMV;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_BMV\"\n  agenda-group \"BASEMARKETVALUE\"\n  salience 50000\n  no-loop\n when\n    \n    \n    BS: rptis.bldg.facts.BldgStructure (  BASEAREA:basefloorarea ) \n   \n    BU: rptis.bldg.facts.BldgUse (  bldgstructure == BS,BASEVALUE:basevalue ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BS\", BS );\n    \n    bindings.put(\"BASEAREA\", BASEAREA );\n    \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"BASEVALUE\", BASEVALUE );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bldguse\", BU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND( BASEAREA * BASEVALUE )\", bindings)) );\naction.execute( \"calc-bldguse-bmv\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-762e9176:15d067a9c42:-5aa0', '\npackage miscassessment.RECALC_RPU_TOTAL_AV;\nimport miscassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_RPU_TOTAL_AV\"\n  agenda-group \"AFTER-SUMMARY\"\n  salience 60000\n  no-loop\n when\n    \n    \n    VAR: rptis.facts.RPTVariable (  varid matches \"TOTAL_VALUE\",TOTALAV:value ) \n    \n    RPU: rptis.facts.RPU (   ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"VAR\", VAR );\n    \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"TOTALAV\", TOTALAV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN( TOTALAV)\", bindings)) );\naction.execute( \"recalc-rpu-totalav\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-762e9176:15d067a9c42:-5e26', '\npackage miscassessment.CALC_TOTAL_ASSESSEMENT_AV;\nimport miscassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_TOTAL_ASSESSEMENT_AV\"\n  agenda-group \"AFTER-SUMMARY\"\n  salience 50000\n  no-loop\n when\n    \n    \n    RA: rptis.facts.RPUAssessment (  actualuseid != null,AV:assessedvalue ) \n    \n    RPU: rptis.facts.RPU (  RPUID:objid ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RA\", RA );\n    \n    bindings.put(\"RPUID\", RPUID );\n    \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"AV\", AV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"refid\", RPUID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_VALUE\", \"TOTAL_VALUE\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-79a9a347:15cfcae84de:-55fd', '\npackage landassessment.CALC_TOTAL_ASSESSEMENT_AV;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_TOTAL_ASSESSEMENT_AV\"\n  agenda-group \"AFTER-SUMMARY\"\n  salience 40000\n  no-loop\n when\n    \n    \n    RA: rptis.facts.RPUAssessment (  actualuseid != null,AV:assessedvalue ) \n    \n    RPU: rptis.facts.RPU (  RPUID:objid ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RA\", RA );\n    \n    bindings.put(\"RPUID\", RPUID );\n    \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"AV\", AV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"refid\", RPUID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_VALUE\", \"TOTAL_VALUE\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-derive-var\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-79a9a347:15cfcae84de:4f83', '\npackage planttreeassessment.CALC_TOTAL_ASSESSEMENT_AV;\nimport planttreeassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_TOTAL_ASSESSEMENT_AV\"\n agenda-group \"AFTER-SUMMARY\"\n  salience 50000\n  no-loop\n when\n    \n    \n    RA: rptis.facts.RPUAssessment (  actualuseid != null,AV:assessedvalue ) \n    \n    RPU: rptis.facts.RPU (  RPUID:objid ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RA\", RA );\n    \n    bindings.put(\"RPUID\", RPUID );\n    \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"AV\", AV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"refid\", RPUID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_VALUE\", \"TOTAL_VALUE\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL-79a9a347:15cfcae84de:549e', '\npackage planttreeassessment.RECALC_TOTAL_AV;\nimport planttreeassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_TOTAL_AV\"\n agenda-group \"AFTER-SUMMARY\"\n  salience 60000\n  no-loop\n when\n    \n    \n    RPU: rptis.facts.RPU (   ) \n   \n    VAR: rptis.facts.RPTVariable (  varid matches \"TOTAL_VALUE\",TOTALAV:value ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"VAR\", VAR );\n    \n    bindings.put(\"TOTALAV\", TOTALAV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN(TOTALAV)\", bindings)) );\naction.execute( \"recalc-rpu-totalav\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL1262ad19:166ae41b1fb:-7c88', '\npackage rptbilling.TOTAL_PREVIOUS;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_PREVIOUS\"\n agenda-group \"SUMMARY\"\n  salience 50000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year < CY ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"revperiod\", \"previous\" );\naction.execute( \"create-tax-summary\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL1441128c:1471efa4c1c:-6b41', '\npackage bldgassessment.CALC_ASSESS_VALUE;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_ASSESS_VALUE\"\n agenda-group \"ASSESSVALUE\"\n  salience 50000\n  no-loop\n when\n    \n    \n    BA: rptis.facts.RPUAssessment (  actualuseid != null,MV:marketvalue,AL:assesslevel ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BA\", BA );\n    \n    bindings.put(\"MV\", MV );\n    \n    bindings.put(\"AL\", AL );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"assessment\", BA );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN(  MV * AL  / 100.0 )\", bindings)) );\naction.execute( \"calc-assess-value\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL1441128c:1471efa4c1c:-6c93', '\npackage bldgassessment.CALC_ASSESS_LEVEL;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_ASSESS_LEVEL\"\n agenda-group \"AFTER-ASSESSLEVEL\"\n  salience 50000\n  no-loop\n when\n    \n    \n    BA: rptis.facts.RPUAssessment (  actualuseid != null ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BA\", BA );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"assessment\", BA );\naction.execute( \"calc-assess-level\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL1441128c:1471efa4c1c:-6eaa', '\npackage bldgassessment.BUILD_ASSESSMENT_INFO;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BUILD_ASSESSMENT_INFO\"\n agenda-group \"BEFORE-ASSESSLEVEL\"\n salience 50000\n  no-loop\n when\n    \n    \n    BU: rptis.bldg.facts.BldgUse (  ACTUALUSE:actualuseid != null ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"ACTUALUSE\", ACTUALUSE );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bldguse\", BU );\n_p0.put( \"actualuseid\", ACTUALUSE );\naction.execute( \"add-assessment-info\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL3e2b89cb:146ff734573:-7dcc', '\npackage bldgassessment.COMPUTE_BLDG_AGE;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"COMPUTE_BLDG_AGE\"\n agenda-group \"PRE-ASSESSMENT\"\n salience 50000\n  no-loop\n when\n    \n    \n    RPU: rptis.bldg.facts.BldgRPU (  YRAPPRAISED:yrappraised > 0,YRCOMPLETED:yrcompleted > 0 ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"YRAPPRAISED\", YRAPPRAISED );\n    \n    bindings.put(\"YRCOMPLETED\", YRCOMPLETED );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rpu\", RPU );\n_p0.put( \"expr\", (new ActionExpression(\"YRAPPRAISED - YRCOMPLETED\", bindings)) );\naction.execute( \"calc-bldg-age\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL3e7cce43:16b25a6ae3b:-2657', '\npackage rptbilling.PENALTY_1992_TO_LESS_CY;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_1992_TO_LESS_CY\"\n agenda-group \"PENALTY\"\n  salience 50000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= 1992,year < CY,backtax == false ,TAX:amtdue,NMON:monthsfromjan ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"TAX\", TAX );\n    \n    bindings.put(\"NMON\", NMON );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(@IIF( NMON * 0.02 > 0.72, TAX * 0.72, TAX * NMON * 0.02))\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL483027b0:16be9375c61:-77e6', '\npackage rptledger.BASIC_AND_SEF_TAX;\nimport rptledger.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BASIC_AND_SEF_TAX\"\n agenda-group \"TAX\"\n  salience 50000\n  no-loop\n when\n    \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  AV:av,revtype matches \"basic|sef\" ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"AV\", AV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"AV * 0.01\", bindings)) );\naction.execute( \"calc-tax\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5b4ac915:147baaa06b4:-6f31', '\npackage landassessment.BUILD_ASSESSMENT_INFO_SPLIT;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BUILD_ASSESSMENT_INFO_SPLIT\"\n agenda-group \"SUMMARY\"\n  salience 50000\n  no-loop\n when\n    \n    \n    LA: rptis.land.facts.LandDetail (  CLASS:classification != null ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"LA\", LA );\n    \n    bindings.put(\"CLASS\", CLASS );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"landdetail\", LA );\n_p0.put( \"classification\", CLASS );\naction.execute( \"add-assessment-info\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-41a3', '\npackage machassessment.CALC_TOTAL_AV;\nimport machassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_TOTAL_AV\"\n agenda-group \"AFTER-SUMMARY\"\n  salience 50000\n  no-loop\n when\n    \n    \n    RA: rptis.facts.RPUAssessment (  actualuseid != null,AV:assessedvalue,taxable == true  ) \n   \n    RPU: rptis.facts.RPU (  RPUID:objid ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RA\", RA );\n    \n    bindings.put(\"RPUID\", RPUID );\n    \n    bindings.put(\"RPU\", RPU );\n    \n    bindings.put(\"AV\", AV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"refid\", RPUID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_VALUE\", \"TOTAL_VALUE\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"AV\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-4ed3', '\npackage bldgassessment.UPDATE_HAULING4;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"UPDATE_HAULING4\"\n agenda-group \"AFTER-ADJUSTMENT\"\n salience 5000\n no-loop\n when\n    \n    \n    BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n    \n    ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,additionalitemcode matches \"HAU4\" ) \n    \n    VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_AMOUNT_FOR_HAULING\",ADJAMOUNT:value ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"REFID\", REFID );\n    \n    bindings.put(\"ADJ\", ADJ );\n    \n    bindings.put(\"VAR\", VAR );\n    \n    bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\n_p0.put( \"var\", VAR );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT * 0.30\", bindings)) );\naction.execute( \"calc-adj\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-4ff2', '\npackage bldgassessment.UPDATE_HAULING3;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"UPDATE_HAULING3\"\n agenda-group \"AFTER-ADJUSTMENT\"\n salience 10000\n  no-loop\n when\n    \n    \n    BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n    \n    ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,additionalitemcode matches \"HAU3\" ) \n    \n    VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_AMOUNT_FOR_HAULING\",ADJAMOUNT:value ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"REFID\", REFID );\n    \n    bindings.put(\"ADJ\", ADJ );\n    \n    bindings.put(\"VAR\", VAR );\n    \n    bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\n_p0.put( \"var\", VAR );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT * 0.20\", bindings)) );\naction.execute( \"calc-adj\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-50fd', '\npackage bldgassessment.UPDATE_HAULING2;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"UPDATE_HAULING2\"\n agenda-group \"AFTER-ADJUSTMENT\"\n salience 15000\n  no-loop\n when\n    \n    \n    BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n    \n    ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,additionalitemcode matches \"HAU2\" ) \n    \n    VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_AMOUNT_FOR_HAULING\",ADJAMOUNT:value ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"REFID\", REFID );\n    \n    bindings.put(\"ADJ\", ADJ );\n    \n    bindings.put(\"VAR\", VAR );\n    \n    bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\n_p0.put( \"var\", VAR );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT * 0.10\", bindings)) );\naction.execute( \"calc-adj\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-560c', '\npackage bldgassessment.UPDATE_HAULING;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"UPDATE_HAULING\"\n agenda-group \"AFTER-ADJUSTMENT\"\n salience 20000\n  no-loop\n when\n    \n    \n    BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n    \n    ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,additionalitemcode matches \"HAU1\" ) \n    \n    VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_AMOUNT_FOR_HAULING\",ADJAMOUNT:value ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"REFID\", REFID );\n    \n    bindings.put(\"ADJ\", ADJ );\n    \n    bindings.put(\"VAR\", VAR );\n    \n    bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\n_p0.put( \"var\", VAR );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT * 0.05\", bindings)) );\naction.execute( \"calc-adj\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-5aab', '\npackage bldgassessment.TOTAL_AMOUNT_FOR_HAULING;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_AMOUNT_FOR_HAULING\"\n agenda-group \"AFTER-ADJUSTMENT\"\n salience 40000\n  no-loop\n when\n    \n    \n    BU: rptis.bldg.facts.BldgUse (  BMV:basemarketvalue,REFID:objid ) \n    \n    VAR: rptis.facts.RPTVariable (  refid == REFID,varid matches \"TOTAL_ADJUSTMENT_BEFORE_HAULING\",ADJAMOUNT:value ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"BMV\", BMV );\n    \n    bindings.put(\"VAR\", VAR );\n    \n    bindings.put(\"REFID\", REFID );\n    \n    bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"refid\", REFID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_AMOUNT_FOR_HAULING\", \"TOTAL_AMOUNT_FOR_HAULING\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"BMV + ADJAMOUNT\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-6215', '\npackage bldgassessment.TOTAL_ADJUSTMENT_BEFORE_HAULLING;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_ADJUSTMENT_BEFORE_HAULLING\"\n agenda-group \"ADJUSTMENT\"\n salience 10000\n  no-loop\n when\n    \n    \n    BU: rptis.bldg.facts.BldgUse (  REFID:objid ) \n    \n    ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,bldguse == BU,ADJAMOUNT:amount ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BU\", BU );\n    \n    bindings.put(\"REFID\", REFID );\n    \n    bindings.put(\"ADJ\", ADJ );\n    \n    bindings.put(\"ADJAMOUNT\", ADJAMOUNT );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"refid\", REFID );\n_p0.put( \"var\", new KeyValue(\"TOTAL_ADJUSTMENT_BEFORE_HAULING\", \"TOTAL_ADJUSTMENT_BEFORE_HAULING\") );\n_p0.put( \"aggregatetype\", \"sum\" );\n_p0.put( \"expr\", (new ActionExpression(\"ADJAMOUNT\", bindings)) );\naction.execute( \"add-derive-rpt-var\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-678e', '\npackage bldgassessment.CALC_FLOOR_BMV;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CALC_FLOOR_BMV\"\n agenda-group \"FLOOR\"\n  salience 50000\n  no-loop\n when\n    \n    \n    BF: rptis.bldg.facts.BldgFloor (  AREA:area,UV:unitvalue ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BF\", BF );\n    \n    bindings.put(\"AREA\", AREA );\n    \n    bindings.put(\"UV\", UV );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bldgfloor\", BF );\n_p0.put( \"expr\", (new ActionExpression(\"AREA * UV\", bindings)) );\naction.execute( \"calc-floor-bmv\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL5ca73361:178b46b1030:-69b3', '\npackage bldgassessment.CLEAR_HAULING_ADJUSTMENTS;\nimport bldgassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"CLEAR_HAULING_ADJUSTMENTS\"\n agenda-group \"PRE-ASSESSMENT\"\n salience 50000\n  no-loop\n when\n    \n    \n    ADJ: rptis.bldg.facts.BldgAdjustment (  bldgfloor != null,additionalitemcode matches \"HAU.*\" ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"ADJ\", ADJ );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"adjustment\", ADJ );\naction.execute( \"reset-adj\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL651fad8c:178b43c2223:-74b7', '\npackage landassessment.RECALC_AV;\nimport landassessment.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"RECALC_AV\"\n agenda-group \"AFTER-SUMMARY\"\n  salience 50000\n  no-loop\n when\n    \n    \n    RA: rptis.facts.RPUAssessment (  actualuseid != null,MV:marketvalue,AL:assesslevel ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RA\", RA );\n    \n    bindings.put(\"MV\", MV );\n    \n    bindings.put(\"AL\", AL );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rpuassessment\", RA );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUNDTOTEN( MV * AL / 100.0  )\", bindings)) );\naction.execute( \"recalc-rpuassessment\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RUL7e02b404:166ae687f42:-5511', '\npackage rptbilling.PENALTY_CURRENT_YEAR;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"PENALTY_CURRENT_YEAR\"\n agenda-group \"PENALTY\"\n  salience 50000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year,CQTR:qtr > 1 ) \n   \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  revtype matches \"basic|sef\",year == CY,qtr < CQTR,TAX:amtdue,NMON:monthsfromqtr ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"CQTR\", CQTR );\n    \n    bindings.put(\"TAX\", TAX );\n    \n    bindings.put(\"NMON\", NMON );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"TAX * NMON * 0.02\", bindings)) );\naction.execute( \"calc-interest\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-255e', '\npackage rptbilling.BUILD_BILL_ITEMS;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"BUILD_BILL_ITEMS\"\n  agenda-group \"AFTER_SUMMARY\"\n  salience 50000\n  no-loop\n when\n    \n    \n    RLTS: rptis.landtax.facts.RPTLedgerTaxSummaryFact (   ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RLTS\", RLTS );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"taxsummary\", RLTS );\naction.execute( \"add-billitem\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-26bf', '\npackage rptbilling.TOTAL_ADVANCE;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_ADVANCE\"\n  agenda-group \"SUMMARY\"\n  salience 50000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year > CY ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"revperiod\", \"advance\" );\naction.execute( \"create-tax-summary\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-26d0', '\npackage rptbilling.TOTAL_CURRENT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"TOTAL_CURRENT\"\n  agenda-group \"SUMMARY\"\n  salience 50000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year == CY ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"revperiod\", \"current\" );\naction.execute( \"create-tax-summary\",_p0,drools);\n\nend\n\n\n  ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-2f1f', '\npackage rptbilling.EXPIRY_DATE_DEFAULT;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"EXPIRY_DATE_DEFAULT\"\n  agenda-group \"BEFORE_SUMMARY\"\n salience 10000\n  no-loop\n when\n    \n    \n    BILL: rptis.landtax.facts.Bill (  CDATE:currentdate ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"BILL\", BILL );\n    \n    bindings.put(\"CDATE\", CDATE );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bill\", BILL );\n_p0.put( \"expr\", (new ActionExpression(\"@MONTHEND( CDATE )\", bindings)) );\naction.execute( \"set-bill-expiry\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-319f', '\npackage rptbilling.EXPIRY_DATE_ADVANCE_YEAR;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"EXPIRY_DATE_ADVANCE_YEAR\"\n  agenda-group \"BEFORE_SUMMARY\"\n salience 5000\n no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RL: rptis.landtax.facts.RPTLedgerFact (  lastyearpaid == CY,lastqtrpaid == 4 ) \n   \n    BILL: rptis.landtax.facts.Bill (  billtoyear > CY ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RL\", RL );\n    \n    bindings.put(\"BILL\", BILL );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"bill\", BILL );\n_p0.put( \"expr\", (new ActionExpression(\"@MONTHEND(@DATE(CY, 12, 1));\", bindings)) );\naction.execute( \"set-bill-expiry\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-3811', '\npackage rptbilling.SPLIT_QUARTERLY_BILLED_ITEMS;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"SPLIT_QUARTERLY_BILLED_ITEMS\"\n  agenda-group \"BEFORE_SUMMARY\"\n salience 50000\n  no-loop\n when\n    \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  qtrly == false ,revtype matches \"basic|sef\" ) \n    \n    BILL: rptis.landtax.facts.Bill (  forpayment == true  ) \n    \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"BILL\", BILL );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\naction.execute( \"split-bill-item\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-3c17', '\npackage rptbilling.AGGREGATE_PREVIOUS_ITEMS;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"AGGREGATE_PREVIOUS_ITEMS\"\n  agenda-group \"BEFORE_SUMMARY\"\n salience 60000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year < CY,qtrly == true  ) \n   \n    BILL: rptis.landtax.facts.Bill (  forpayment == false  ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"BILL\", BILL );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\naction.execute( \"aggregate-bill-item\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-4197', '\npackage rptbilling.DISCOUNT_ADVANCE;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"DISCOUNT_ADVANCE\"\n  agenda-group \"DISCOUNT\"\n salience 40000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year > CY,TAX:amtdue ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n    bindings.put(\"TAX\", TAX );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\n_p0.put( \"expr\", (new ActionExpression(\"@ROUND(TAX * 0.20)\", bindings)) );\naction.execute( \"calc-discount\",_p0,drools);\n\nend\n\n\n ');
+INSERT INTO `sys_rule_deployed` (`objid`, `ruletext`) VALUES ('RULec9d7ab:166235c2e16:-5fcb', '\npackage rptbilling.SPLIT_QTR;\nimport rptbilling.*;\nimport java.util.*;\nimport com.rameses.rules.common.*;\n\nglobal RuleAction action;\n\nrule \"SPLIT_QTR\"\n  agenda-group \"INIT\"\n salience 50000\n  no-loop\n when\n    \n    \n     CurrentDate (  CY:year ) \n    \n    RLI: rptis.landtax.facts.RPTLedgerItemFact (  year >= CY ) \n   \n  then\n    Map bindings = new HashMap();\n   \n    bindings.put(\"CY\", CY );\n    \n    bindings.put(\"RLI\", RLI );\n    \n  Map _p0 = new HashMap();\n_p0.put( \"rptledgeritem\", RLI );\naction.execute( \"split-by-qtr\",_p0,drools);\n\nend\n\n\n  ');
 
 INSERT INTO `sys_rule_fact` (`objid`, `name`, `title`, `factclass`, `sortorder`, `handler`, `defaultvarname`, `dynamic`, `lookuphandler`, `lookupkey`, `lookupvalue`, `lookupdatatype`, `dynamicfieldname`, `builtinconstraints`, `domain`, `factsuperclass`) VALUES ('CurrentDate', 'CurrentDate', 'Current Date', 'CurrentDate', '1', '', '', NULL, '', '', '', '', '', '', 'LANDTAX', NULL);
 INSERT INTO `sys_rule_fact` (`objid`, `name`, `title`, `factclass`, `sortorder`, `handler`, `defaultvarname`, `dynamic`, `lookuphandler`, `lookupkey`, `lookupvalue`, `lookupdatatype`, `dynamicfieldname`, `builtinconstraints`, `domain`, `factsuperclass`) VALUES ('rptis.bldg.facts.BldgAdjustment', 'rptis.bldg.facts.BldgAdjustment', 'Building Adjustment', 'rptis.bldg.facts.BldgAdjustment', '10', NULL, 'ADJ', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'RPT', NULL);
